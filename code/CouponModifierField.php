@@ -2,14 +2,15 @@
 /**
  * Form field that represents {@link CouponRate}s in the Checkout form.
  */
-class CouponModifierField extends ModificationField_Hidden {
-	
-  /**
+class CouponModifierField extends ModificationField_Hidden
+{
+    
+    /**
    * The amount this field represents e.g: 15% * order subtotal
    * 
    * @var Money
    */
-	protected $amount;
+    protected $amount;
 
   /**
    * Render field with the appropriate template.
@@ -17,10 +18,11 @@ class CouponModifierField extends ModificationField_Hidden {
    * @see FormField::FieldHolder()
    * @return String
    */
-  function FieldHolder($properties = array()) {
-    Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
-    Requirements::javascript('swipestripe-coupon/javascript/CouponModifierField.js');
-    return $this->renderWith($this->template);
+  public function FieldHolder($properties = array())
+  {
+      Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
+      Requirements::javascript('swipestripe-coupon/javascript/CouponModifierField.js');
+      return $this->renderWith($this->template);
   }
 
   /**
@@ -30,8 +32,9 @@ class CouponModifierField extends ModificationField_Hidden {
    * 
    * @param Order $order
    */
-  function updateValue($order, $data) {
-    return $this;
+  public function updateValue($order, $data)
+  {
+      return $this;
   }
 
   /**
@@ -39,11 +42,10 @@ class CouponModifierField extends ModificationField_Hidden {
    * FlatFeeShippingRate it represents is valid for the Shipping country being set in the 
    * {@link Order}.
    */
-  function validate($validator){
-
-    $valid = true;
-    return $valid;
-
+  public function validate($validator)
+  {
+      $valid = true;
+      return $valid;
   }
   
   /**
@@ -51,9 +53,10 @@ class CouponModifierField extends ModificationField_Hidden {
    * 
    * @param Money $amount
    */
-  function setAmount(Money $amount) {
-    $this->amount = $amount;
-    return $this;
+  public function setAmount(Money $amount)
+  {
+      $this->amount = $amount;
+      return $this;
   }
   
   /**
@@ -61,8 +64,9 @@ class CouponModifierField extends ModificationField_Hidden {
    * 
    * @return String
    */
-  function Description() {
-    return $this->amount->Nice();
+  public function Description()
+  {
+      return $this->amount->Nice();
   }
 
   /**
@@ -70,34 +74,38 @@ class CouponModifierField extends ModificationField_Hidden {
    * 
    * @return Boolean True
    */
-  function modifiesSubTotal() {
-    return false;
+  public function modifiesSubTotal()
+  {
+      return false;
   }
 }
 
-class CouponModifierField_Extension extends Extension {
+class CouponModifierField_Extension extends Extension
+{
 
-	static $allowed_actions = array (
+    public static $allowed_actions = array(
     'checkcoupon'
   );
 
-  public function updateOrderForm($form) {
-    Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
-    Requirements::javascript('swipestripe-coupon/javascript/CouponModifierField.js');
-  }
+    public function updateOrderForm($form)
+    {
+        Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
+        Requirements::javascript('swipestripe-coupon/javascript/CouponModifierField.js');
+    }
 
-  function checkcoupon($request) {
-  	$data = array('errorMessage' => null);
-  	$code = Convert::raw2sql($request->postVar('CouponCode'));
-    $date = date('Y-m-d');
-    $coupon = Coupon::get()
-    	->where("\"Code\" = '$code' AND \"Expiry\" >= '$date'")
-    	->first();
+    public function checkcoupon($request)
+    {
+        $data = array('errorMessage' => null);
+        $code = Convert::raw2sql($request->postVar('CouponCode'));
+        $date = date('Y-m-d');
+        $coupon = Coupon::get()
+        ->where("\"Code\" = '$code' AND \"Expiry\" >= '$date'")
+        ->first();
 
-		if (!$coupon || !$coupon->exists()) {
-			$data['errorMessage'] = 'Coupon is invalid or expired.';
-		}
+        if (!$coupon || !$coupon->exists()) {
+            $data['errorMessage'] = 'Coupon is invalid or expired.';
+        }
 
-		return json_encode($data);
-	}
+        return json_encode($data);
+    }
 }
